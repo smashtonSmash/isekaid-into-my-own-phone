@@ -57,10 +57,36 @@ function nearestWalk(x: number, y: number, garden: { x: number; y: number }): { 
   return { x, y }
 }
 
+function nearestLane(x: number, y: number, garden: { x: number; y: number }): { x: number; y: number } {
+  let best = { x, y }
+  let bestDist = Number.POSITIVE_INFINITY
+  for (let py = 0; py < ROWS; py += 1) {
+    for (let px = 0; px < COLS; px += 1) {
+      if (terrainAt(px, py) !== 'path' || !walkable(px, py, garden)) continue
+      const dist = Math.abs(px - x) + Math.abs(py - y)
+      if (dist < bestDist) {
+        bestDist = dist
+        best = { x: px, y: py }
+      }
+    }
+  }
+  return best
+}
+
+/** Townsfolk stay on the path. Anyone standing in the grass walks toward the nearest lane. */
 function stepActor(actor: Actor, garden: { x: number; y: number }): Actor {
   const here = walkable(actor.x, actor.y, garden) ? actor : { ...actor, ...nearestWalk(actor.x, actor.y, garden) }
-  const options = DIRS.filter(([dx, dy]) => walkable(here.x + dx, here.y + dy, garden))
-  if (options.length === 0 || Math.random() < 0.35) return here
+  if (terrainAt(here.x, here.y) !== 'path') {
+    const goal = nearestLane(here.x, here.y, garden)
+    const dx = Math.sign(goal.x - here.x)
+    const dy = dx === 0 ? Math.sign(goal.y - here.y) : 0
+    if ((dx !== 0 || dy !== 0) && walkable(here.x + dx, here.y + dy, garden)) {
+      return { id: here.id, x: here.x + dx, y: here.y + dy, facing: facingFromStep(dx, dy, here.facing) }
+    }
+    return here
+  }
+  const options = DIRS.filter(([dx, dy]) => terrainAt(here.x + dx, here.y + dy) === 'path' && walkable(here.x + dx, here.y + dy, garden))
+  if (options.length === 0 || Math.random() < 0.45) return here
   const pick = options[Math.floor(Math.random() * options.length)] ?? [0, 0]
   const dx = pick[0] ?? 0
   const dy = pick[1] ?? 0
@@ -267,6 +293,7 @@ export function TownWorld({
       const dx = event.clientX - drag.current.x
       const dy = event.clientY - drag.current.y
       if (Math.hypot(dx, dy) > 12) drag.current.moved = true
+      // Free pan on both axes. A vertical drag moves north and south, not only along the row.
       setCam({ ...camRef.current, x: drag.current.camX + dx, y: drag.current.camY + dy })
       return
     }
@@ -375,7 +402,7 @@ export function TownWorld({
           return <Structure key={spot.id} {...spot} level={built.level} busy={built.busy} />
         })}
         {actors.map((actor) => {
-          const sheet = actor.id === 'elowen' || actor.id === 'rokha' ? CHARACTER_SPRITES[actor.id] : null
+          const sheet = CHARACTER_SPRITES[actor.id]
           const look = VILLAGERS[actor.id].look
           return (
             <div

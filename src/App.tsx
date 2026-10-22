@@ -12,18 +12,7 @@ function Desk() {
 
   return (
     <div className="desk">
-      <div className="phone">
-        {screen}
-        <div className="rotate-hint">
-          <div className="rotate-card">
-            <span className="rotate-phone" aria-hidden="true">
-              📱
-            </span>
-            <strong>Turn your phone sideways</strong>
-            <p>The village is a wide lane. Landscape gives you the field, the hall, and the tax clock.</p>
-          </div>
-        </div>
-      </div>
+      <div className="phone">{screen}</div>
     </div>
   )
 }

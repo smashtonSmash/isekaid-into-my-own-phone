@@ -8,14 +8,14 @@ The currency is **glim**. **Stardust** is the rare timer-skip, earned from level
 
 ## Play
 
-Hold the phone sideways. In portrait the game asks you to turn it. Drag to pan, pinch or scroll to zoom, and tap a tile to plant, talk, or open a building. Move garden shows the grid so the beds can slide.
+Hold the phone upright. Landscape still plays. Drag the village in any direction, pinch or scroll to zoom, and tap a tile to plant, talk, or open a building. The hammer on the right shows the grid so the beds can slide.
 
 1. **Intro.** Lumi explains the isekai and the king's tax. Miri meets you at the gate. Their portraits sit in the dialogue frame.
-2. **First morning.** Plant a radish in the 6×6 garden (about a minute), harvest it, cook a skillet at Elowen's inn, and serve it to Miri or sell it. That pays your first glim. The tax clock is in the top bar. A bare tile can be left tilled, or planted with tomato, pumpkin, carrot, wheat, cabbage, strawberry, watermelon, or sunflower.
-3. **Town Hall.** Vale, the guildmaster, signs you into five contracts: slimes, then goblins. Battles are turn-based: Attack, Skill, Defend, and Item. Wins pay glim, XP, and materials. Hired friends can stand with you.
+2. **First morning.** Lumi slides into the bottom-right corner, above the tabs, and talks you through it: plant a radish in the 6×6 garden (about a minute), harvest it, cook a skillet at Elowen's inn, and serve it to Miri or sell it. That pays your first glim. She uses the same bubble for system notes, and the same expressions: a wave, an explanation, a cheer, or a surprise. The tax clock sits on the name plate. A bare tile can be left tilled, or planted with tomato, pumpkin, carrot, wheat, cabbage, strawberry, watermelon, or sunflower.
+3. **Adventure.** Vale, the guildmaster, signs you into five contracts: slimes, then goblins. The road is the Adventure tab. The Town Hall still links to it. Battles are turn-based: Attack, Skill, Defend, and Item. Wins pay glim, XP, and materials. Hired friends can stand with you.
 4. **Upgrades.** The Town Hall ladder is the one in the design bible, from a free first floor to the Gate. Early raises are minutes. Later ones stretch toward half a day. Buildings have their own timers. Town Hall 2 opens the café, barn, potting shed, and the next five neighbors. The garden stays a movable 6×6.
 5. **Kingdom.** The third tab in the Town Hall says the road opens at Town Hall 8. There is no realm behind it yet.
-6. **Friends and the market.** The bottom bar is Goals, Friends, and Market. Hearts rise from a daily chat, a gift, or a filled order. At 40 hearts a neighbor can be hired for a perk. Heartmark at 90 is recorded and left for a later chapter.
+6. **The five tabs.** Home is the cottage: the morning board, the tax ledger, and rest. Village is the map. Friends is the roster. Storage is the bag, with filters, and the market’s seed stall. Adventure is the expedition road. Hearts rise from a daily chat, a gift, or a filled order. At 40 hearts a neighbor can be hired for a perk. Heartmark at 90 is recorded and left for a later chapter.
 
 Progress is saved in this browser under `localStorage` key `isekaid-into-my-own-phone`. Nothing is uploaded. Older saves from the first chapter do not carry over.
 
@@ -54,7 +54,9 @@ This chapter does not date anyone.
 
 The camera faces north. Rows run across the screen and columns run straight up it, in the straight-on 3/4 of a Pokémon town: square tiles, the tops of the ground, and the fronts of buildings and people. Anything lower on the screen draws in front. Hover and the open panel light a tile. Move garden draws a grid over every cell and a ghost of the 6×6 beds.
 
-Elowen walks with a transparent four-frame sprite: front when she steps down, back when she steps up, and the sides for left and right. The side frames show one braid. Rokha uses the same facing. Buildings are painted front facades, roof over a wall, in the slow-life palette.
+Elowen walks with a transparent four-frame sprite: front when she steps down, back when she steps up, and the sides for left and right. The side frames show one braid. Rokha uses the same facing. Lumi walks the path too. Her sheet is front, back, and two left-facing sides, so the right-facing frame is a mirror of the first side. Buildings are painted front facades, roof over a wall, in the slow-life palette.
+
+After the intro, Lumi is the corner guide, above the tab bar. She waves when you arrive, explains each morning step, cheers for a success or a payout, and looks surprised for a warning or a new unlock. Townsfolk walk the paths. Dialogue portraits stay the bust photos.
 
 The Town Hall and the inn use front-facing paintings. Each sprite’s base sits on the south edge of its footprint, and the roof rises toward the north.
 

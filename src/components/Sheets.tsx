@@ -5,7 +5,6 @@ import {
   CROP_IDS,
   GUILD_MASTER,
   KINGDOM_HALL,
-  MISSIONS,
   RECIPES,
   VILLAGERS,
   buildingDuration,
@@ -14,15 +13,10 @@ import {
   dialogueFor,
   growthOf,
   itemDef,
-  missionUnlocked,
   nextHall,
   nextTier,
-  priceOf,
-  tutorialMarks,
 } from '../game/data.ts'
 import {
-  buySeed,
-  claimGoal,
   cook,
   gift,
   harvest,
@@ -30,11 +24,8 @@ import {
   hurryBuilding,
   hurryHall,
   hurryPlot,
-  payTax,
   plant,
   till,
-  rest,
-  sell,
   serve,
   signGuild,
   startBuilding,
@@ -45,7 +36,7 @@ import {
   friendTitle,
 } from '../game/engine.ts'
 import { formatLeft } from '../game/format.ts'
-import type { BuildingId, CropId, ItemId, MissionId, VillagerId } from '../game/types.ts'
+import type { BuildingId, ItemId, VillagerId } from '../game/types.ts'
 import { useGame } from '../game/useGame.ts'
 import { Speech } from './Portrait.tsx'
 import { Meter, Sheet } from './ui.tsx'
@@ -238,11 +229,11 @@ export function PersonSheet({ id, onClose }: { id: VillagerId; onClose: () => vo
 export function HallSheet({
   now,
   onClose,
-  onFight,
+  onAdventure,
 }: {
   now: number
   onClose: () => void
-  onFight: (id: MissionId) => void
+  onAdventure: () => void
 }) {
   const { state, act } = useGame()
   const [tab, setTab] = useState<'guild' | 'upgrades' | 'kingdom'>('guild')
@@ -275,32 +266,17 @@ export function HallSheet({
               Sign the ledger
             </button>
           )}
-          {state.guildSigned && (
-            <div className="stack">
-              {MISSIONS.map((mission) => {
-                const open = missionUnlocked(state.missionsCleared, mission.id)
-                const clears = state.missionsCleared[mission.id] ?? 0
-                return (
-                  <button
-                    key={mission.id}
-                    type="button"
-                    className="btn"
-                    disabled={!open}
-                    onClick={() => {
-                      onFight(mission.id)
-                      onClose()
-                    }}
-                  >
-                    {mission.name}
-                    <small>
-                      {open ? mission.detail : 'Clear the earlier contract first.'} · {mission.glim} glim · {mission.xp} XP
-                      {clears ? ` · cleared ${clears}` : ''}
-                    </small>
-                  </button>
-                )
-              })}
-            </div>
-          )}
+          <button
+            type="button"
+            className="btn primary"
+            onClick={() => {
+              onAdventure()
+              onClose()
+            }}
+          >
+            Open the Adventure map
+            <small>The guild contracts and the battles live on that road.</small>
+          </button>
         </>
       )}
       {tab === 'upgrades' && (
@@ -342,140 +318,13 @@ export function HallSheet({
   )
 }
 
-export function GoalsSheet({ now, onClose }: { now: number; onClose: () => void }) {
-  const { state, act } = useGame()
-  if (!state) return null
-  const ready = state.plots.some((plot) => plot.crop === 'radish' && growthOf(plot, state.villagers, now)?.ready)
-  const marks = tutorialMarks(state.tutorial, Boolean(ready))
-  const taxLeft = state.tax.dueAt > 0 ? state.tax.dueAt - now : 0
-
-  return (
-    <Sheet title="Goals" onClose={onClose}>
-      <h3>First morning</h3>
-      <ol className="marks">
-        {marks.map((mark) => (
-          <li key={mark.label} data-state={mark.state}>
-            {mark.label}
-          </li>
-        ))}
-      </ol>
-      <h3>King’s tax</h3>
-      <p>
-        {Math.min(state.glim, state.tax.goal)}/{state.tax.goal} glim · {state.tax.dueAt > 0 ? formatLeft(taxLeft) : 'starts in the village'}
-      </p>
-      <button type="button" className="btn primary" onClick={() => act((current) => payTax(current, Date.now()))}>
-        Pay the tax
-      </button>
-      <h3>Today</h3>
-      <div className="stack">
-        {state.goals.map((goal) => (
-          <button key={goal.id} type="button" className="btn" disabled={goal.claimed || goal.progress < goal.target} onClick={() => act((current) => claimGoal(current, goal.id))}>
-            {goal.title}
-            <small>
-              {goal.detail} · {goal.progress}/{goal.target} · {goal.rewardGlim} glim
-              {goal.claimed ? ' · claimed' : ''}
-            </small>
-          </button>
-        ))}
-      </div>
-      <button type="button" className="btn" onClick={() => act(rest)}>
-        Rest until dawn
-        <small>Refreshes chats, gifts, and orders. Crops keep their real timers.</small>
-      </button>
-      <p className="fine">Guild contracts live in the Town Hall, under the tallest thatch.</p>
-    </Sheet>
-  )
-}
-
-export function FriendsSheet({ onOpen, onClose }: { onOpen: (id: VillagerId) => void; onClose: () => void }) {
-  const { state } = useGame()
-  if (!state) return null
-  return (
-    <Sheet title="Friends" onClose={onClose}>
-      <p>The people already in the lanes. Hearts rise from chats, gifts, and plates.</p>
-      <div className="stack">
-        {state.villagers.map((villager) => {
-          const def = VILLAGERS[villager.id]
-          return (
-            <button key={villager.id} type="button" className="btn" onClick={() => onOpen(villager.id)}>
-              {def.name}
-              <small>
-                {def.title} · {friendTitle(villager.id, villager.friendship)} · {villager.friendship} hearts
-                {villager.hired ? ' · hired' : ''}
-              </small>
-            </button>
-          )
-        })}
-      </div>
-    </Sheet>
-  )
-}
-
-export function MarketSheet({ onClose }: { onClose: () => void }) {
-  const { state, act } = useGame()
-  if (!state) return null
-  const sellable = (Object.keys(state.inventory) as ItemId[]).filter((id) => {
-    const def = itemDef(id)
-    return (state.inventory[id] ?? 0) > 0 && def.sell != null
-  })
-  const materials = (['slime_gel', 'goblin_scrap'] as ItemId[]).filter((id) => (state.inventory[id] ?? 0) > 0)
-
-  return (
-    <Sheet title="Market" onClose={onClose}>
-      <h3>Seeds</h3>
-      <div className="stack">
-        {CROP_IDS.map((crop) => {
-          const open = cropUnlocked(crop, state.townHall.level)
-          return (
-            <button key={crop} type="button" className="btn" disabled={!open} onClick={() => act((current) => buySeed(current, crop, 1))}>
-              {CROPS[crop].name} seed · {CROPS[crop].seedCost} glim
-              <small>{open ? CROPS[crop].blurb : `Town Hall ${CROPS[crop].hall}`}</small>
-            </button>
-          )
-        })}
-      </div>
-      <h3>Sell</h3>
-      <div className="stack">
-        {sellable.length === 0 && <p>Harvest or cook something, then bring it here.</p>}
-        {sellable.map((id) => {
-          const def = itemDef(id)
-          const stale = def.kind === 'crop' ? (state.stale[id as CropId] ?? 0) : 0
-          const price = priceOf(id, false, state.villagers, state.buildings.inn.level)
-          return (
-            <button key={id} type="button" className="btn" onClick={() => act((current) => sell(current, id, 1))}>
-              Sell {def.name}
-              <small>
-                {state.inventory[id]} in the bag · {price} glim
-                {stale ? ` · ${stale} tired, half price` : ''}
-              </small>
-            </button>
-          )
-        })}
-      </div>
-      {materials.length > 0 && (
-        <>
-          <h3>Materials</h3>
-          <ul className="plain">
-            {materials.map((id) => (
-              <li key={id}>
-                {itemDef(id).name} · {state.inventory[id]}
-              </li>
-            ))}
-          </ul>
-          <p className="fine">The forge pays better for these once Town Hall 3 raises it. For now they stay in the bag.</p>
-        </>
-      )}
-    </Sheet>
-  )
-}
-
 export function HelpSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet title="How the village works" onClose={onClose}>
-      <p>Drag to look around the lanes. Pinch or scroll to come closer. Tap a soil tile, a neighbor, or a building. Move garden turns on the grid so the beds can slide onto clear grass.</p>
+      <p>Hold the phone upright. Drag the village in any direction, and pinch or scroll to come closer. Tap a soil tile, a neighbor, or a building. The hammer on the right turns on the grid so the beds can slide onto clear grass.</p>
       <p>Crops grow on real timers. Watering shortens them. Leave a crop for twice its time and it tires, selling for half and still cooking fine.</p>
-      <p>The inn cooks the first dishes. Friends pay glim and hearts for the plate they asked for. The Town Hall guild sends you into short battles.</p>
-      <p>Level and the tax live in the top bar. Goals, Friends, and Market live along the bottom.</p>
+      <p>The inn cooks the first dishes. Friends pay glim and hearts for the plate they asked for. Guild contracts are on the Adventure tab, and the Town Hall still points at that road.</p>
+      <p>Your name, level, glim, and stardust sit in the top bar, with the tax on the name plate. Home keeps the day’s goals. Storage is the bag and the seed stall.</p>
     </Sheet>
   )
 }
