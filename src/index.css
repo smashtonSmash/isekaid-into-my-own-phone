@@ -989,3 +989,155 @@ input {
   .speech { grid-template-columns: 150px 1fr; }
   .portrait-slot { width: 150px; height: 196px; }
 }
+
+.opening {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: #f4fffe;
+  background:
+    radial-gradient(70% 50% at 50% 62%, rgba(62, 200, 194, 0.28), transparent 62%),
+    linear-gradient(180deg, #071820 0%, #0c3038 46%, #123f46 100%);
+  user-select: none;
+}
+.opening::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 62%, rgba(126, 246, 234, 0.34), transparent 58%);
+}
+.opening.holding::after { animation: hold-wash 0.36s ease-in-out infinite; }
+.opening-kicker {
+  position: relative;
+  z-index: 3;
+  margin: calc(16px + env(safe-area-inset-top)) 18px 0;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #d8fff8;
+}
+.opening-lumi {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.opening-lumi img {
+  height: min(82vh, 680px);
+  width: auto;
+  max-width: 130%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.38));
+  animation: lumi-float 3.4s ease-in-out infinite;
+}
+.opening.holding .opening-lumi img {
+  filter: drop-shadow(0 0 22px rgba(126, 246, 234, 0.8)) drop-shadow(0 16px 22px rgba(0, 0, 0, 0.38));
+}
+@keyframes lumi-float {
+  50% { transform: translateY(-8px); }
+}
+.hold-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  touch-action: none;
+}
+.plea-bubble {
+  display: block;
+  margin: 0 auto;
+  max-width: 320px;
+  padding: 12px 14px;
+  border-radius: 18px 18px 18px 8px;
+  background: rgba(255, 250, 244, 0.96);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 8px 0 rgba(8, 30, 34, 0.28);
+}
+.hold-screen .plea-bubble {
+  position: absolute;
+  top: 16%;
+  left: 20px;
+  right: 20px;
+}
+.plea-bubble strong { display: block; color: #1b8b90; font-size: 13px; }
+.plea-bubble p { margin: 2px 0 0; font-size: 18px; font-weight: 800; line-height: 1.3; }
+.hold-ui {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.hold-ring { position: relative; width: 132px; height: 132px; }
+.hold-ring svg { width: 100%; height: 100%; display: block; }
+.hold-ring .track { fill: none; stroke: rgba(255, 255, 255, 0.28); stroke-width: 8; }
+.hold-ring .meter {
+  fill: none;
+  stroke: #7ef6ea;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 289;
+  stroke-dashoffset: 289;
+}
+.hold-screen.holding .meter { animation: lumi-hold-fill 1.5s linear forwards; }
+@keyframes lumi-hold-fill { to { stroke-dashoffset: 0; } }
+.hold-ring i {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(126, 246, 234, 0.22), rgba(126, 246, 234, 0.02) 70%);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+.opening.holding .hold-ring i { animation: hold-pulse 0.36s ease-in-out infinite; }
+@keyframes hold-pulse {
+  0%, 100% { transform: scale(0.94); opacity: 0.55; box-shadow: 0 0 0 0 rgba(126, 246, 234, 0); }
+  50% { transform: scale(1.06); opacity: 1; box-shadow: 0 0 28px 12px rgba(126, 246, 234, 0.55); }
+}
+@keyframes hold-wash { 50% { opacity: 1; } }
+.hold-label {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+.name-panel {
+  position: relative;
+  z-index: 3;
+  margin-top: auto;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, rgba(4, 22, 28, 0.55) 18%, rgba(4, 22, 28, 0.92));
+}
+.name-panel .plea-bubble { margin-bottom: 14px; }
+.portal {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: #04161c;
+  pointer-events: none;
+}
+.portal canvas { width: 100%; height: 100%; display: block; }
+
+@media (max-height: 420px) {
+  .opening-lumi img { height: 92vh; }
+  .hold-screen .plea-bubble { top: 8px; }
+  .plea-bubble p { font-size: 15px; }
+  .hold-ui { bottom: 8px; }
+  .hold-ring { width: 84px; height: 84px; }
+  .hold-label { font-size: 16px; }
+  .name-panel { padding-top: 8px; }
+}

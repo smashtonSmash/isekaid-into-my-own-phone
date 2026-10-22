@@ -1,84 +1,50 @@
 import { useState } from 'react'
 import { seasonLabel } from '../game/data.ts'
-import { sanitizeName } from '../game/engine.ts'
 import { useGame } from '../game/useGame.ts'
 import { Confirm } from './ui.tsx'
 
 export function TitleScreen() {
-  const { state, startNew, continueGame, abandon } = useGame()
-  const [name, setName] = useState(state?.playerName ?? '')
+  const { state, continueGame, abandon } = useGame()
   const [confirmNew, setConfirmNew] = useState(false)
   const [confirmErase, setConfirmErase] = useState(false)
 
-  const begin = () => {
-    if (state) {
-      setConfirmNew(true)
-      return
-    }
-    startNew(sanitizeName(name))
-  }
+  if (!state) return null
 
   return (
     <div className="app" data-phase="dawn">
       <div className="stage title-stage">
         <p className="kicker">Chapter I · Slow life</p>
         <h1 className="logo">Isekai'd, into my own phone!?</h1>
-        <p className="tag">You were only going to check one more thing.</p>
-        <div className="title-phone" aria-hidden="true">
-          <div className="title-glass">
-            <span>11:58</span>
-            <i />
-            <b>???</b>
-          </div>
-        </div>
-        <form
-          className="title-form"
-          onSubmit={(event) => {
-            event.preventDefault()
-            begin()
-          }}
-        >
-          <label htmlFor="hero-name">What should the village call you?</label>
-          <input
-            id="hero-name"
-            maxLength={16}
-            autoComplete="nickname"
-            placeholder="Traveler"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-          <button type="submit" className="btn primary big">
-            Fall in
+        <p className="tag">Her hand is already in yours.</p>
+        <div className="panel continue-card">
+          <p className="kicker">Still on this phone</p>
+          <strong>
+            {state.playerName} · Lv {state.level}
+          </strong>
+          <p>
+            {state.glim} glim · Day {state.day} · {seasonLabel(state.season)}
+          </p>
+          <button type="button" className="btn good big" onClick={continueGame}>
+            Continue
           </button>
-        </form>
-        {state && (
-          <div className="panel continue-card">
-            <p className="kicker">Still on this phone</p>
-            <strong>
-              {state.playerName} · Lv {state.level}
-            </strong>
-            <p>
-              {state.glim} glim · Day {state.day} · {seasonLabel(state.season)}
-            </p>
-            <button type="button" className="btn good big" onClick={continueGame}>
-              Continue
-            </button>
-            <button type="button" className="text-btn" onClick={() => setConfirmErase(true)}>
-              Erase this dream
-            </button>
-          </div>
-        )}
+          <button type="button" className="text-btn" onClick={() => setConfirmNew(true)}>
+            Take her hand again
+          </button>
+          <button type="button" className="text-btn" onClick={() => setConfirmErase(true)}>
+            Erase this dream
+          </button>
+        </div>
       </div>
       {confirmNew && (
         <Confirm
           title="Start over?"
-          body="A new fall will erase the day saved on this phone."
-          confirmLabel="Fall in again"
+          body="A new fall will erase the day saved on this phone. Lumi will reach through the glass again."
+          confirmLabel="Take her hand"
           tone="danger"
           onClose={() => setConfirmNew(false)}
           onConfirm={() => {
             setConfirmNew(false)
-            startNew(sanitizeName(name))
+            abandon()
           }}
         />
       )}
@@ -91,7 +57,6 @@ export function TitleScreen() {
           onClose={() => setConfirmErase(false)}
           onConfirm={() => {
             setConfirmErase(false)
-            setName('')
             abandon()
           }}
         />
