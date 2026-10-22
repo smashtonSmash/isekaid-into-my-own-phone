@@ -18,7 +18,7 @@ import {
 } from '../game/layout.ts'
 import type { CropId, GameState, VillagerId } from '../game/types.ts'
 import type { WorldPick } from './pick.ts'
-import { CHARACTER_SPRITES, facingFromStep, type Facing } from './sprites.ts'
+import { BUILDING_ART, CHARACTER_SPRITES, facingFromStep, type Facing } from './sprites.ts'
 
 type Actor = { id: VillagerId; x: number; y: number; facing: Facing }
 
@@ -98,20 +98,25 @@ function Structure({
   level: number
   busy: boolean
 }) {
+  const art = BUILDING_ART[id]
   return (
     <div
-      className={`structure ${id} ${level < 1 ? 'staked' : ''} ${busy ? 'busy' : ''}`}
+      className={`structure ${id} ${art ? 'painted' : ''} ${level < 1 ? 'staked' : ''} ${busy ? 'busy' : ''}`}
       style={{ left: x * TILE, top: y * TILE, width: w * TILE, height: h * TILE, zIndex: (y + h) * 10 }}
     >
-      <span className="facade" aria-hidden="true">
-        <i className="roof" />
-        <i className="wall" />
-        <i className="door" />
-        <span className="windows">
-          <i />
-          <i />
+      {art ? (
+        <img className="building-art" src={art} alt="" />
+      ) : (
+        <span className="facade" aria-hidden="true">
+          <i className="roof" />
+          <i className="wall" />
+          <i className="door" />
+          <span className="windows">
+            <i />
+            <i />
+          </span>
         </span>
-      </span>
+      )}
       <span className="structure-name">{busy ? `${label} · raising` : label}</span>
     </div>
   )

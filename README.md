@@ -56,7 +56,7 @@ The camera faces north. Rows run across the screen and columns run straight up i
 
 Elowen walks with a transparent four-frame sprite: front when she steps down, back when she steps up, and the sides for left and right. The side frames show one braid. Rokha uses the same facing. Buildings are painted front facades, roof over a wall, in the slow-life palette.
 
-The supplied Town Hall and inn paintings are isometric corner views. They do not face this camera, so those two buildings need new front-facing art. Until then the hall and the inn use the same painted fronts as the rest of the town.
+The Town Hall and the inn use front-facing paintings. Each sprite’s base sits on the south edge of its footprint, and the roof rises toward the north.
 
 UI type is [Nunito](https://fonts.google.com/specimen/Nunito) by Vernon Adams, bundled under the SIL Open Font License (`src/assets/fonts`).
 

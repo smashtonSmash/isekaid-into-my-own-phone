@@ -252,6 +252,17 @@ input {
   pointer-events: none;
   overflow: visible;
 }
+.building-art {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  transform: translateX(-50%);
+  pointer-events: none;
+  image-rendering: auto;
+  filter: drop-shadow(0 8px 0 rgba(48, 32, 16, 0.16));
+}
 .facade {
   position: absolute;
   left: 4px;
