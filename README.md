@@ -52,13 +52,15 @@ This chapter does not date anyone.
 
 ## Art
 
-The town is a square tile map. Grass, paths, a pond, flower tiles, and building footprints share one grid. Hover and the open panel light a tile. Move garden draws a grid over every cell and a ghost of the 6×6 beds.
+The camera faces north. Rows run across the screen and columns run straight up it, in the straight-on 3/4 of a Pokémon town: square tiles, the tops of the ground, and the fronts of buildings and people. Anything lower on the screen draws in front. Hover and the open panel light a tile. Move garden draws a grid over every cell and a ghost of the 6×6 beds.
 
-Elowen, the elf innkeeper, walks with a transparent four-frame sprite: front, back, left, right, one braid. Rokha, the half-orc town keeper, has her own four-frame sprite. Facing follows the step. The Town Hall and the inn use cropped building sprites. Other roofs are painted blocks on their footprints.
+Elowen walks with a transparent four-frame sprite: front when she steps down, back when she steps up, and the sides for left and right. The side frames show one braid. Rokha uses the same facing. Buildings are painted front facades, roof over a wall, in the slow-life palette.
+
+The supplied Town Hall and inn paintings are isometric corner views. They do not face this camera, so those two buildings need new front-facing art. Until then the hall and the inn use the same painted fronts as the rest of the town.
 
 UI type is [Nunito](https://fonts.google.com/specimen/Nunito) by Vernon Adams, bundled under the SIL Open Font License (`src/assets/fonts`).
 
-Lumi and Miri keep their full-size photographs in dialogue. Elowen and Rokha use cut-out portraits at the same resolution. Vale and the other neighbors use painted stand-ins in that frame.
+Dialogue portraits are WebP at about 1024px tall. Lumi and Miri are photographs. Elowen and Rokha are cut out. Vale and the other neighbors use painted stand-ins in that frame.
 
 ## Who is here
 

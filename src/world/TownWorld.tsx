@@ -18,7 +18,7 @@ import {
 } from '../game/layout.ts'
 import type { CropId, GameState, VillagerId } from '../game/types.ts'
 import type { WorldPick } from './pick.ts'
-import { BUILDING_ART, CHARACTER_SPRITES, facingFromStep, type Facing } from './sprites.ts'
+import { CHARACTER_SPRITES, facingFromStep, type Facing } from './sprites.ts'
 
 type Actor = { id: VillagerId; x: number; y: number; facing: Facing }
 
@@ -98,19 +98,20 @@ function Structure({
   level: number
   busy: boolean
 }) {
-  const art = BUILDING_ART[id]
   return (
     <div
       className={`structure ${id} ${level < 1 ? 'staked' : ''} ${busy ? 'busy' : ''}`}
-      style={{ left: x * TILE, top: y * TILE, width: w * TILE, height: h * TILE }}
+      style={{ left: x * TILE, top: y * TILE, width: w * TILE, height: h * TILE, zIndex: (y + h) * 10 }}
     >
-      {art && <img src={art} alt="" />}
-      {!art && (
-        <span className="block">
-          <i className="roof" />
-          <i className="wall" />
+      <span className="facade" aria-hidden="true">
+        <i className="roof" />
+        <i className="wall" />
+        <i className="door" />
+        <span className="windows">
+          <i />
+          <i />
         </span>
-      )}
+      </span>
       <span className="structure-name">{busy ? `${label} · raising` : label}</span>
     </div>
   )
@@ -355,7 +356,11 @@ export function TownWorld({
           const stage = growth ? stageOf(growth.fraction, growth.ready, growth.stale) : null
           const emoji = plot.crop ? CROP_EMOJI[plot.crop] : undefined
           return (
-            <div key={`soil-${index}`} className={`tile soil ${plot.tilled ? 'tilled' : ''} ${plot.crop ?? ''}`} style={{ left: x * TILE + 1, top: y * TILE + 1 }}>
+            <div
+              key={`soil-${index}`}
+              className={`tile soil ${plot.tilled ? 'tilled' : ''} ${plot.crop ?? ''}`}
+              style={{ left: x * TILE + 1, top: y * TILE + 1, zIndex: (y + 1) * 10 + 1 }}
+            >
               {plot.crop && stage && (emoji && stage !== 'sprout' ? <span className={`glyph ${stage}`}>{emoji}</span> : <i className={`plant ${stage} ${plot.crop}`} />)}
             </div>
           )
@@ -368,7 +373,13 @@ export function TownWorld({
           const sheet = actor.id === 'elowen' || actor.id === 'rokha' ? CHARACTER_SPRITES[actor.id] : null
           const look = VILLAGERS[actor.id].look
           return (
-            <div key={actor.id} className={`actor face-${actor.facing}`} style={{ left: actor.x * TILE, top: actor.y * TILE }} data-actor={actor.id} data-facing={actor.facing}>
+            <div
+              key={actor.id}
+              className={`actor face-${actor.facing}`}
+              style={{ left: actor.x * TILE, top: actor.y * TILE, zIndex: (actor.y + 1) * 10 + 5 }}
+              data-actor={actor.id}
+              data-facing={actor.facing}
+            >
               {sheet ? <img src={sheet[actor.facing]} alt="" /> : (
                 <span className="token" style={{ background: look.cloth }}>
                   <b style={{ background: look.hair }} />

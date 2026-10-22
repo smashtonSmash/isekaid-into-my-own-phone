@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
-import elowenUrl from '../assets/portraits/elowen.png'
-import lumiUrl from '../assets/portraits/lumi.jpg'
-import miriUrl from '../assets/portraits/miri.jpg'
-import rokhaUrl from '../assets/portraits/rokha.png'
+import elowenUrl from '../assets/portraits/elowen.webp'
+import lumiUrl from '../assets/portraits/lumi.webp'
+import miriUrl from '../assets/portraits/miri.webp'
+import rokhaUrl from '../assets/portraits/rokha.webp'
 import { GUILD_MASTER, VILLAGERS, type Look } from '../game/data.ts'
 import type { VillagerId } from '../game/types.ts'
 
@@ -19,7 +19,7 @@ function lookFor(who: string): Look | null {
   return null
 }
 
-/** Lumi and Miri stay full-size photographs. Elowen and Rokha use cut-out portraits at the same resolution. */
+/** Dialogue portraits are WebP, about 1024px tall. Lumi and Miri are photographs. Elowen and Rokha are cut out. */
 export function Portrait({ who, alt }: { who: string; alt: string }) {
   const photo = PHOTOS[who]
   if (photo) return <img src={photo} alt={alt} />
