@@ -1,0 +1,17 @@
+{
+  "name": "Isekai'd, into my own phone!?",
+  "short_name": "Isekai'd",
+  "description": "A slow-life isekai town builder that starts in your pocket.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffd4ea",
+  "theme_color": "#ff7aa2",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
