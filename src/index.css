@@ -192,6 +192,195 @@ input {
 .town-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .town-canvas, canvas { image-rendering: auto; }
 
+.map-view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: #6eaf46;
+  cursor: grab;
+}
+.map-view.placing { cursor: crosshair; }
+.map-stage { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+.tile {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 7px;
+  box-shadow: inset 0 -3px 0 rgba(40, 50, 20, 0.12);
+}
+.tile.path { background: #e4c48a; box-shadow: inset 0 0 0 3px #d7b078, inset 0 -4px 0 #c8a06a; }
+.tile.water { background: linear-gradient(180deg, #8fd8ef, #4aa8d4); border-radius: 10px; }
+.tile.flower { background: #7ec850; }
+.tile.flower::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff4c4 0 3px, #f2a0c8 4px 7px);
+  box-shadow: 0 8px 0 #3e8a32;
+}
+.tile.soil { background: #d7b07a; z-index: 1; }
+.tile.soil.tilled { background: #a56b3a; }
+.tile.soil.tilled::before {
+  content: "";
+  position: absolute;
+  inset: 7px 5px;
+  background: repeating-linear-gradient(90deg, transparent 0 7px, rgba(70, 36, 12, 0.28) 7px 9px);
+}
+.plant, .glyph {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+.plant.sprout { width: 8px; height: 12px; border-radius: 8px 8px 2px 2px; background: #3e9a32; }
+.plant.leaf { width: 16px; height: 16px; border-radius: 50% 50% 40% 40%; background: #e24b4b; }
+.plant.ready { width: 22px; height: 22px; border-radius: 46%; background: #e24b4b; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.45); }
+.plant.tired { width: 18px; height: 12px; border-radius: 40%; background: #b85a4a; transform: translateX(-50%) rotate(18deg); }
+.plant.turnip.leaf, .plant.turnip.ready { background: #f4efe4; box-shadow: inset 0 7px 0 #8d6adf; }
+.plant.cabbage.leaf, .plant.cabbage.ready { background: #7dbe45; }
+.glyph { font-size: 16px; line-height: 1; bottom: 8px; filter: drop-shadow(0 2px 0 rgba(40, 30, 10, 0.2)); }
+.glyph.ready { font-size: 22px; }
+.glyph.tired { filter: grayscale(0.45) drop-shadow(0 2px 0 rgba(40, 30, 10, 0.2)); transform: translateX(-50%) rotate(12deg); }
+.structure {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+.structure .block { position: absolute; inset: 8px 10px 16px; }
+.structure .roof {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: 0;
+  height: 42%;
+  background: #c45c3e;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.structure .wall {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 62%;
+  background: #f3e2c4;
+  border-radius: 4px 4px 2px 2px;
+  box-shadow: inset 0 -8px 0 rgba(90, 50, 20, 0.12);
+}
+.structure.cafe .roof { background: #e07a9a; }
+.structure.barn .roof { background: #8d4e32; }
+.structure.barn .wall { background: #c47a45; }
+.structure.garden .roof { background: #6eae45; }
+.structure.market .roof { background: #f0b429; }
+.structure.market .wall { background: #f7e7c4; }
+.structure.house .roof { background: #d4654a; }
+.structure.staked { opacity: 0.72; }
+.structure.staked .wall { background: repeating-linear-gradient(90deg, #e7d3b0, #e7d3b0 6px, #cbb892 6px 8px); }
+.structure img {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  height: 210%;
+  width: auto;
+  max-width: none;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 0 rgba(40, 30, 10, 0.16));
+}
+.structure-name {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  background: rgba(255, 250, 244, 0.94);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(90, 50, 20, 0.12);
+}
+.actor {
+  position: absolute;
+  z-index: 3;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+}
+.actor img {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  height: 92px;
+  width: auto;
+  filter: drop-shadow(0 4px 0 rgba(40, 30, 10, 0.22));
+}
+.token {
+  position: absolute;
+  left: 8px;
+  bottom: 4px;
+  width: 32px;
+  height: 36px;
+  border-radius: 16px 16px 10px 10px;
+  box-shadow: 0 4px 0 rgba(40, 30, 10, 0.18);
+}
+.token b, .token i { position: absolute; display: block; }
+.token b { left: 4px; right: 4px; top: -6px; height: 16px; border-radius: 10px 10px 4px 4px; }
+.token i { left: 7px; top: 6px; width: 18px; height: 16px; border-radius: 9px; }
+.actor.face-left .token { transform: scaleX(-1); }
+.actor.face-back .token b { height: 22px; top: -8px; }
+.tile-mark, .garden-ghost, .map-grid { position: absolute; pointer-events: none; }
+.tile-mark { z-index: 4; width: 48px; height: 48px; border-radius: 8px; box-sizing: border-box; }
+.tile-mark.hover { border: 3px solid rgba(255, 255, 255, 0.95); box-shadow: inset 0 0 0 2px rgba(30, 80, 20, 0.28); }
+.tile-mark.selected { z-index: 5; border: 3px solid #f6c445; box-shadow: inset 0 0 0 2px rgba(120, 70, 10, 0.35); }
+.garden-ghost { z-index: 4; border-radius: 12px; box-sizing: border-box; }
+.garden-ghost.ok { background: rgba(255, 214, 90, 0.28); border: 3px solid #f0b429; }
+.garden-ghost.bad { background: rgba(220, 70, 50, 0.25); border: 3px solid #d4533a; }
+.map-grid {
+  inset: 0;
+  z-index: 4;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.55) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.map-tools {
+  position: absolute;
+  right: 10px;
+  bottom: 78px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: min(260px, 46vw);
+}
+.map-tools p {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(255, 250, 244, 0.96);
+  font-size: 13px;
+  font-weight: 700;
+}
+.map-tools button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 800;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 3px 0 #e7cbb0;
+}
+.map-tools button.on { background: linear-gradient(#ffc56a, #f4892a); color: white; box-shadow: 0 3px 0 var(--amber-deep); }
+
 .hud {
   position: absolute;
   top: 0;
@@ -526,6 +715,8 @@ input {
 
 @media (max-height: 420px) {
   .coach { bottom: 70px; padding: 8px 10px; }
+  .map-tools { bottom: 64px; }
+  .map-tools p { display: none; }
   .coach p { display: none; }
   .tabbar { bottom: 4px; padding: 6px; }
   .tabbar button { padding: 8px; }

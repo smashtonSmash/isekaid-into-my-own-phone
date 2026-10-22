@@ -10,6 +10,9 @@ function isGameState(value: unknown): value is GameState {
     typeof data.level === 'number' &&
     typeof data.glim === 'number' &&
     Array.isArray(data.plots) &&
+    data.plots.length === 36 &&
+    typeof data.garden?.x === 'number' &&
+    typeof data.garden?.y === 'number' &&
     Array.isArray(data.villagers) &&
     Array.isArray(data.goals) &&
     data.dating === null &&

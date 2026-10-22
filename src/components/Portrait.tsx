@@ -1,12 +1,16 @@
 import type { ReactNode } from 'react'
+import elowenUrl from '../assets/portraits/elowen.png'
 import lumiUrl from '../assets/portraits/lumi.jpg'
 import miriUrl from '../assets/portraits/miri.jpg'
+import rokhaUrl from '../assets/portraits/rokha.png'
 import { GUILD_MASTER, VILLAGERS, type Look } from '../game/data.ts'
 import type { VillagerId } from '../game/types.ts'
 
 const PHOTOS: Record<string, string> = {
   lumi: lumiUrl,
   miri: miriUrl,
+  elowen: elowenUrl,
+  rokha: rokhaUrl,
 }
 
 function lookFor(who: string): Look | null {
@@ -15,7 +19,7 @@ function lookFor(who: string): Look | null {
   return null
 }
 
-/** Lumi and Miri use the high-res portraits. Everyone else is a painted stand-in for a later picture. */
+/** Lumi and Miri stay full-size photographs. Elowen and Rokha use cut-out portraits at the same resolution. */
 export function Portrait({ who, alt }: { who: string; alt: string }) {
   const photo = PHOTOS[who]
   if (photo) return <img src={photo} alt={alt} />

@@ -1,5 +1,5 @@
 import { attackUntilDone, startBattle } from '../src/game/battle.ts'
-import { CROPS, growthOf, KINGDOM_HALL, missionUnlocked } from '../src/game/data.ts'
+import { CROPS, cropUnlocked, growthOf, KINGDOM_HALL, missionUnlocked } from '../src/game/data.ts'
 import {
   buySeed,
   claimGoal,
@@ -10,6 +10,7 @@ import {
   gift,
   harvest,
   hire,
+  moveGarden,
   payTax,
   plant,
   sell,
@@ -19,8 +20,10 @@ import {
   startTownHall,
   sync,
   talk,
+  till,
   water,
 } from '../src/game/engine.ts'
+import { DEFAULT_GARDEN, gardenFits, NPC_HOME, walkable } from '../src/game/layout.ts'
 import type { GameState } from '../src/game/types.ts'
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -36,13 +39,23 @@ const now = 1_700_000_000_000
 let state = enterTown(createGame('Aoi'), now)
 assert(state.playerName === 'Aoi', 'name')
 assert(state.glim === 20, 'starting glim')
-assert(state.plots.length === 4, 'four plots')
+assert(state.plots.length === 36, 'six by six garden')
+assert(state.garden.x === DEFAULT_GARDEN.x && state.garden.y === DEFAULT_GARDEN.y, 'garden origin')
+assert(gardenFits(DEFAULT_GARDEN.x, DEFAULT_GARDEN.y), 'default beds sit on grass')
+assert(gardenFits(8, 10), 'alternate grass patch')
+assert(!gardenFits(0, 0), 'hall blocks the corner')
+for (const spot of Object.values(NPC_HOME)) assert(walkable(spot.x, spot.y, state.garden), 'neighbor has a path')
+assert(state.villagers.some((villager) => villager.id === 'elowen'), 'elf innkeeper')
+assert(state.villagers.some((villager) => villager.id === 'rokha'), 'town keeper')
 assert(state.townHall.level === 1, 'hall starts at 1')
 assert(state.tutorial === 'plant', 'tutorial')
 assert(state.dating === null, 'dating hook stays null')
 assert(state.villagers.every((villager) => villager.romanceRoute === null), 'routes stay null')
 assert(state.tax.dueAt === now + 10 * 60_000, 'tax clock')
-assert(!plant(state, 0, 'carrot', now).ok, 'carrot waits for town hall 2')
+assert(cropUnlocked('carrot', 1), 'garden crops open with the first hall')
+assert(!plant(state, 0, 'carrot', now).ok, 'carrot still needs a seed')
+state = must(till(state, 3), 'till')
+assert(state.plots[3]?.tilled && !state.plots[3]?.crop, 'left tilled')
 
 state = must(plant(state, 0, 'radish', now), 'plant')
 assert(state.tutorial === 'grow', 'tutorial advances')
@@ -96,7 +109,10 @@ const rich = { ...built, glim: 500 }
 const raising = must(startTownHall(rich, now), 'hall')
 const raised = sync(raising, (raising.townHall.readyAt ?? 0) + 1)
 assert(raised.townHall.level === 2, 'hall 2')
-assert(raised.plots.length === 8, 'eight plots')
+assert(raised.plots.length === 36, 'garden stays six by six')
+state = must(moveGarden(raised, 8, 10), 'move garden')
+assert(state.garden.x === 8 && state.garden.y === 10, 'beds moved')
+assert(state.plots.every((plot, index) => plot.crop === raised.plots[index]?.crop && plot.tilled === raised.plots[index]?.tilled), 'beds keep their soil')
 assert(raised.villagers.some((villager) => villager.id === 'kenji'), 'kenji arrives')
 assert(raised.dating === null, 'upgrade does not date anyone')
 
@@ -117,8 +133,8 @@ const hirable = {
   villagers: marked.villagers.map((villager) => (villager.id === 'miri' ? { ...villager, friendship: 40 } : villager)),
 }
 state = must(hire(hirable, 'miri'), 'hire')
-const plain = growthOf({ crop: 'turnip', plantedAt: now, watered: false }, hirable.villagers, now)
-const led = growthOf({ crop: 'turnip', plantedAt: now, watered: false }, state.villagers, now)
+const plain = growthOf({ crop: 'turnip', plantedAt: now, watered: false, tilled: true }, hirable.villagers, now)
+const led = growthOf({ crop: 'turnip', plantedAt: now, watered: false, tilled: true }, state.villagers, now)
 assert(plain && led && led.ms < plain.ms, 'miri speeds crops')
 
 assert(!gift(state, 'aldric', 'radish').ok, 'mayor refuses a radish')

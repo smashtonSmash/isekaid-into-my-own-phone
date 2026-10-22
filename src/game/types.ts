@@ -1,11 +1,21 @@
 /** Save shape for the opening of the village. Dating stays a closed hook. */
 
 export const SAVE_KEY = 'isekaid-into-my-own-phone'
-export const SAVE_VERSION = 2
+export const SAVE_VERSION = 3
 
 export type SeasonId = 'early-spring'
 
-export type CropId = 'radish' | 'turnip' | 'carrot' | 'strawberry'
+export type CropId =
+  | 'radish'
+  | 'turnip'
+  | 'carrot'
+  | 'strawberry'
+  | 'tomato'
+  | 'pumpkin'
+  | 'wheat'
+  | 'cabbage'
+  | 'watermelon'
+  | 'sunflower'
 
 export type MealId = 'radish_skillet' | 'turnip_soup' | 'carrot_tea' | 'berry_cup'
 
@@ -18,9 +28,10 @@ export type ItemId = CropId | MealId | SeedId | MaterialId
 export type VillagerId =
   | 'miri'
   | 'lumi'
-  | 'popo'
+  | 'elowen'
   | 'garrick'
   | 'aldric'
+  | 'rokha'
   | 'lila'
   | 'ren'
   | 'hana'
@@ -52,6 +63,8 @@ export type Plot = {
   crop: CropId | null
   plantedAt: number | null
   watered: boolean
+  /** Turned soil with nothing planted. Planting also tills. */
+  tilled: boolean
 }
 
 export type BuildingState = {
@@ -109,6 +122,8 @@ export type GameState = {
   glim: number
   stardust: number
   plots: Plot[]
+  /** Top-left tile of the 6×6 beds. */
+  garden: { x: number; y: number }
   inventory: Partial<Record<ItemId, number>>
   /** Harvests left in the ground too long. Sold at half price, still fine to cook. */
   stale: Partial<Record<CropId, number>>

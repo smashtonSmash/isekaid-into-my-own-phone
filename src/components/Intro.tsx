@@ -26,7 +26,7 @@ const BEATS: { who: string; name: string; line: string }[] = [
   {
     who: 'miri',
     name: 'Miri',
-    line: 'Plant a radish. It grows on a real timer, so wander while you wait. Harvest it, cook a skillet at Popo’s inn, and bring it to me. I will pay you in glim.',
+    line: 'Plant a radish in the garden. It grows on a real timer, so wander while you wait. Harvest it, cook a skillet at Elowen’s inn, and bring it to me. I will pay you in glim.',
   },
 ]
 

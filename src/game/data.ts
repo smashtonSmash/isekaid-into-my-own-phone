@@ -68,7 +68,7 @@ export const CROPS: Record<CropId, CropDef> = {
     seedCost: 8,
     sell: 18,
     ms: 3 * 60_000,
-    hall: 2,
+    hall: 1,
     blurb: 'Theo will talk about the soil for as long as you let him.',
   },
   strawberry: {
@@ -77,8 +77,62 @@ export const CROPS: Record<CropId, CropDef> = {
     seedCost: 12,
     sell: 26,
     ms: 4 * 60_000,
-    hall: 2,
+    hall: 1,
     blurb: 'Hana pretends she is not waiting for these.',
+  },
+  tomato: {
+    id: 'tomato',
+    name: 'Tomato',
+    seedCost: 6,
+    sell: 16,
+    ms: 2 * 60_000,
+    hall: 1,
+    blurb: 'A red cheek that ripens while you walk the square.',
+  },
+  pumpkin: {
+    id: 'pumpkin',
+    name: 'Pumpkin',
+    seedCost: 14,
+    sell: 32,
+    ms: 5 * 60_000,
+    hall: 1,
+    blurb: 'Heavy, patient, and proud of taking its time.',
+  },
+  wheat: {
+    id: 'wheat',
+    name: 'Wheat',
+    seedCost: 7,
+    sell: 15,
+    ms: 150_000,
+    hall: 1,
+    blurb: 'A gold row. The inn will want it when the bakery arrives.',
+  },
+  cabbage: {
+    id: 'cabbage',
+    name: 'Cabbage',
+    seedCost: 8,
+    sell: 18,
+    ms: 3 * 60_000,
+    hall: 1,
+    blurb: 'Layered and unbothered. A good gift for a long walk.',
+  },
+  watermelon: {
+    id: 'watermelon',
+    name: 'Watermelon',
+    seedCost: 16,
+    sell: 36,
+    ms: 6 * 60_000,
+    hall: 1,
+    blurb: 'The loudest fruit in the beds, and the sweetest wait.',
+  },
+  sunflower: {
+    id: 'sunflower',
+    name: 'Sunflower',
+    seedCost: 9,
+    sell: 20,
+    ms: 150_000,
+    hall: 1,
+    blurb: 'It faces the lane. Hana says that counts as company.',
   },
 }
 
@@ -108,7 +162,7 @@ export const RECIPES: Recipe[] = [
     ingredients: [{ item: 'turnip', qty: 1 }],
     sell: 26,
     place: 'inn',
-    blurb: 'Cloudy and kind. Popo’s kettle knows this one by heart.',
+    blurb: 'Cloudy and kind. Elowen’s kettle knows this one by heart.',
   },
   {
     id: 'carrot_tea',
@@ -259,12 +313,12 @@ export const VILLAGERS: Record<VillagerId, VillagerDef> = {
       'Stay. If a way home shows up, we can look at it together and decide then.',
     ]),
   },
-  popo: {
-    id: 'popo',
-    name: 'Popo',
+  elowen: {
+    id: 'elowen',
+    name: 'Elowen',
     title: 'Innkeeper',
-    age: 34,
-    personality: 'Motherly, gossipy, fierce when the kettle is disrespected.',
+    age: 29,
+    personality: 'Warm, precise, and a little teasing once the kettle is respected.',
     loved: ['turnip_soup', 'radish'],
     liked: ['turnip', 'radish_skillet'],
     disliked: ['carrot'],
@@ -275,13 +329,13 @@ export const VILLAGERS: Record<VillagerId, VillagerDef> = {
     romance: false,
     hp: 36,
     atk: 6,
-    look: { hair: '#e6b15a', skin: '#f0c29a', cloth: '#f7f1e6', eye: '#6a4a32', extra: 'cat' },
+    look: { hair: '#1d3a28', skin: '#f6d3b8', cloth: '#f4f7f2', eye: '#2f8a45', extra: 'braid' },
     lines: lines([
-      'First warm meal is yours once you have something to cook. I’m Popo. Sit near the kettle.',
-      'I have a recipe I don’t write down. You get the version with the extra ladle.',
+      'The kettle is already hot. I’m Elowen. Sit if you have something worth cooking.',
+      'One braid, one ladle, one rule: the skillet gets a minute of quiet.',
       'The inn sign creaks. Garrick will scold it. I like the creak. It means people are coming.',
       'Hire me and every plate you carry lands with a little more friendship on it.',
-      'I ran from a louder town once. This kitchen is the whole reason I stopped running.',
+      'I left a louder wood once. This kitchen, and the braid I refused to cut, are why I stayed.',
       'Anniversary stew is on the day the inn was raised. You are invited. Bring a spoon and a story.',
       'Best friend is the right size of promise. I will keep your bowl on the hook by the door.',
     ]),
@@ -338,6 +392,33 @@ export const VILLAGERS: Record<VillagerId, VillagerDef> = {
       'The founding of this place involves a phone and a promise. I will tell you which one came first when the hall is taller.',
       'I would name you deputy if the sash had a second pin. Consider this the pin.',
       'Best friend of the mayor is a civic title. I am making it up, and I am keeping it.',
+    ]),
+  },
+  rokha: {
+    id: 'rokha',
+    name: 'Rokha',
+    title: 'Town keeper',
+    age: 31,
+    personality: 'Steady and dry. She keeps the square swept and the leaning things on a list.',
+    loved: ['turnip_soup', 'radish'],
+    liked: ['turnip', 'cabbage'],
+    disliked: ['berry_cup'],
+    refuse: 'Too sweet for a morning round. Bring me something that survives a walk.',
+    workplace: 'hall',
+    hireLock: 'The square is already her round. Reach Friend and she will hurry the walls.',
+    perk: 'Town rounds: building timers finish 10% sooner.',
+    romance: false,
+    hp: 38,
+    atk: 8,
+    look: { hair: '#241c18', skin: '#7ea86a', cloth: '#6a4632', eye: '#5a3a28', extra: 'none' },
+    lines: lines([
+      'Rokha. I keep the square, the steps, and the list of things that lean. You just arrived, so you are on the list.',
+      'The beds can slide. The hall cannot. If you move the garden, leave me a path around it.',
+      'Elowen’s sign creaks on purpose. I have decided not to fix that one.',
+      'Hire me and the raising of a wall takes a shorter breath. Garrick still gets the credit. I get the round.',
+      'I walked a louder city once. This square is small enough to know by heart. I would like help knowing it.',
+      'Dusk is when the lane is honest. Walk it with me when the tax clock is quiet.',
+      'Best friend. I will save you the dry step by the hall, the one that does not puddle.',
     ]),
   },
   lila: {
@@ -477,7 +558,7 @@ export const VILLAGERS: Record<VillagerId, VillagerDef> = {
   },
 }
 
-export const TH1_IDS: VillagerId[] = ['miri', 'lumi', 'popo', 'garrick', 'aldric']
+export const TH1_IDS: VillagerId[] = ['miri', 'lumi', 'elowen', 'garrick', 'aldric', 'rokha']
 export const TH2_IDS: VillagerId[] = ['lila', 'ren', 'hana', 'theo', 'kenji']
 export const VILLAGER_IDS = Object.keys(VILLAGERS) as VillagerId[]
 
@@ -542,9 +623,9 @@ export type HallNext = {
 }
 
 const HALL_LADDER: HallNext[] = [
-  { level: 2, cost: 500, ms: 2 * 60_000, unlocks: 'Café, barn, garden, 8 plots, carrot and strawberry. Lila, Ren, Hana, Theo, and Kenji arrive.' },
+  { level: 2, cost: 500, ms: 2 * 60_000, unlocks: 'Café, barn, and the potting shed. Lila, Ren, Hana, Theo, and Kenji arrive.' },
   { level: 3, cost: 2_000, ms: 15 * 60_000, unlocks: 'Forge, forest gate, the weekend caravan, and festivals.' },
-  { level: 4, cost: 6_000, ms: 60 * 60_000, unlocks: 'Boutique, clinic, bakery, and 16 plots. Wheat and corn wait further out.' },
+  { level: 4, cost: 6_000, ms: 60 * 60_000, unlocks: 'Boutique, clinic, and bakery. The garden beds stay six by six.' },
   { level: 5, cost: 15_000, ms: 2 * 60 * 60_000, unlocks: 'Harbor, fishing pier, and rooms for visitors.' },
   { level: 6, cost: 35_000, ms: 4 * 60 * 60_000, unlocks: 'The mountain shrine, an orchard, and pumpkins.' },
   { level: 7, cost: 75_000, ms: 6 * 60 * 60_000, unlocks: 'The Signal Tower story, a greenhouse, and moonflowers.' },
@@ -594,7 +675,7 @@ export const BUILDINGS: Record<BuildingId, BuildingDef> = {
   inn: {
     id: 'inn',
     name: 'Inn',
-    blurb: 'Popo’s kettle. Radish skillets and turnip soup start here.',
+    blurb: 'Elowen’s kettle. Radish skillets and turnip soup start here.',
     tiers: [
       { level: 2, cost: 40, ms: 50_000, hall: 1, effect: 'A wider kettle. Meals sell for a little more.' },
       { level: 3, cost: 180, ms: 3 * 60_000, hall: 2, effect: 'A dining room that can hold a festival spillover.' },
@@ -621,7 +702,7 @@ export const BUILDINGS: Record<BuildingId, BuildingDef> = {
   garden: {
     id: 'garden',
     name: 'Garden',
-    blurb: 'Hana and Theo’s beds. Flowers first, arguments about compost second.',
+    blurb: 'The potting shed beside the beds. The six-by-six soil can move. Hana and Theo take a job here.',
     tiers: [
       { level: 1, cost: 160, ms: 75_000, hall: 2, effect: 'The garden opens for Hana and Theo.' },
       { level: 2, cost: 360, ms: 4 * 60_000, hall: 3, effect: 'A potting shed and deeper beds.' },
@@ -638,7 +719,10 @@ export function nextTier(id: BuildingId, level: number): BuildingTier | null {
 export function buildingDuration(id: BuildingId, level: number, state: { villagers: Pick<VillagerState, 'id' | 'hired'>[] }): number {
   const tier = nextTier(id, level)
   if (!tier) return 0
-  return isHired(state, 'garrick') ? Math.round(tier.ms * 0.8) : tier.ms
+  let ms = tier.ms
+  if (isHired(state, 'garrick')) ms = Math.round(ms * 0.8)
+  if (isHired(state, 'rokha')) ms = Math.round(ms * 0.9)
+  return ms
 }
 
 export const GUILD_MASTER = {
@@ -749,9 +833,13 @@ const REQUESTS: Record<VillagerId, Request[]> = {
     { item: 'turnip', reward: 16, hearts: 4 },
     { item: 'radish_skillet', reward: 24, hearts: 5 },
   ],
-  popo: [
+  elowen: [
     { item: 'turnip_soup', reward: 30, hearts: 5 },
     { item: 'radish', reward: 12, hearts: 3 },
+  ],
+  rokha: [
+    { item: 'radish', reward: 12, hearts: 3 },
+    { item: 'turnip_soup', reward: 26, hearts: 4 },
   ],
   garrick: [
     { item: 'radish', reward: 12, hearts: 3 },
@@ -786,7 +874,8 @@ const REQUESTS: Record<VillagerId, Request[]> = {
 const DAY_ONE: Partial<Record<VillagerId, ItemId>> = {
   miri: 'radish_skillet',
   lumi: 'turnip',
-  popo: 'turnip_soup',
+  elowen: 'turnip_soup',
+  rokha: 'radish',
   garrick: 'radish',
   aldric: 'turnip_soup',
 }
@@ -912,32 +1001,4 @@ export function priceOf(
 
 export function timerLabel(ms: number): string {
   return formatLeft(ms)
-}
-
-export const PEOPLE_POS: Record<VillagerId, [number, number, number]> = {
-  miri: [-0.15, 0, 0.45],
-  lumi: [-4.35, 0, 0.15],
-  popo: [4.35, 0, -1.15],
-  garrick: [-4.9, 0, 1.15],
-  aldric: [1.55, 0, -4.15],
-  lila: [6.15, 0, 0.85],
-  ren: [7.05, 0, 0.15],
-  hana: [2.7, 0, 4.15],
-  theo: [4.15, 0, 3.85],
-  kenji: [-4.4, 0, -3.55],
-}
-
-export const BUILDING_POS: Record<BuildingId | 'hall', [number, number, number]> = {
-  house: [-5.55, 0, -1.25],
-  inn: [5.25, 0, -2.25],
-  cafe: [6.7, 0, 1.55],
-  barn: [-3.7, 0, -4.55],
-  garden: [3.55, 0, 4.55],
-  hall: [0.15, 0, -5.45],
-}
-
-export function plotCoords(index: number): [number, number, number] {
-  const col = index % 4
-  const row = Math.floor(index / 4)
-  return [-2.15 + col * 1.42, 0, 1.55 + row * 1.48]
 }

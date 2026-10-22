@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CROPS, growthOf, tutorialMarks, xpToNext } from '../game/data.ts'
-import { payTax } from '../game/engine.ts'
+import { moveGarden, payTax } from '../game/engine.ts'
 import { formatLeft } from '../game/format.ts'
 import type { MissionId, VillagerId } from '../game/types.ts'
 import { useGame } from '../game/useGame.ts'
@@ -33,6 +33,7 @@ export function Shell() {
   const { state, toast, act, dismissToast } = useGame()
   const [panel, setPanel] = useState<Panel | null>(null)
   const [battle, setBattle] = useState<MissionId | null>(null)
+  const [placing, setPlacing] = useState(false)
   const now = useNow(500)
 
   useEffect(() => {
@@ -78,7 +79,20 @@ export function Shell() {
 
   return (
     <div className="app world-app">
-      <TownWorld state={state} now={now} focus={focus} onPick={openPick} />
+      <TownWorld
+        state={state}
+        now={now}
+        focus={focus}
+        placing={placing}
+        onPick={openPick}
+        onMoveGarden={(x, y) => {
+          act((current) => {
+            const result = moveGarden(current, x, y)
+            if (result.ok) setPlacing(false)
+            return result
+          })
+        }}
+      />
       <header className="hud">
         <div className="pill level" aria-label={`Level ${state.level}, ${state.xp} of ${nextXp} experience`}>
           <strong>Lv {state.level}</strong>
@@ -125,12 +139,25 @@ export function Shell() {
               {state.plots.find((plot) => plot.crop)?.crop ? ` on the ${CROPS[state.plots.find((plot) => plot.crop)?.crop ?? 'radish'].name.toLowerCase()}` : ''}.
             </p>
           )}
-          {state.tutorial === 'plant' && <p>Tap a soil plot in the front row.</p>}
+          {state.tutorial === 'plant' && <p>Tap a soil tile in the garden.</p>}
           {state.tutorial === 'grow' && ready && <p>Tap the plot and bring it in.</p>}
           {state.tutorial === 'cook' && <p>Tap the inn and cook a radish skillet.</p>}
           {state.tutorial === 'deliver' && <p>Serve Miri, or sell the skillet at the market.</p>}
         </aside>
       )}
+      <div className="map-tools">
+        {placing && <p>Tap the grass where the beds should sit. The grid marks every tile.</p>}
+        <button
+          type="button"
+          className={placing ? 'on' : ''}
+          onClick={() => {
+            setPlacing((value) => !value)
+            setPanel(null)
+          }}
+        >
+          {placing ? 'Cancel move' : 'Move garden'}
+        </button>
+      </div>
       <nav className="tabbar">
         <button type="button" className={panel?.type === 'goals' ? 'on' : ''} onClick={() => setPanel({ type: 'goals' })}>
           Goals

@@ -32,6 +32,7 @@ import {
   hurryPlot,
   payTax,
   plant,
+  till,
   rest,
   sell,
   serve,
@@ -55,21 +56,37 @@ export function PlotSheet({ index, now, onClose }: { index: number; now: number;
   const plot = state.plots[index]
   if (!plot) return null
   const growth = growthOf(plot, state.villagers, now)
-  const seeds = CROP_IDS.filter((crop) => cropUnlocked(crop, state.townHall.level) && (state.inventory[`${crop}_seed`] ?? 0) > 0)
 
   return (
-    <Sheet title={`Plot ${index + 1}`} onClose={onClose}>
+    <Sheet title={`Bed ${index + 1}`} onClose={onClose}>
       {!plot.crop && (
         <>
-          <p>Open soil. A radish is ready in one minute. A turnip takes a little longer.</p>
+          <p>
+            {plot.tilled
+              ? 'Tilled soil. Plant a crop, or leave the bed turned.'
+              : 'Bare soil. Till it, or plant straight into it. A radish is ready in one minute.'}
+          </p>
+          {!plot.tilled && (
+            <button type="button" className="btn" onClick={() => act((current) => till(current, index))}>
+              Leave tilled
+            </button>
+          )}
           <div className="stack">
-            {seeds.map((crop) => (
-              <button key={crop} type="button" className="btn primary" onClick={() => act((current) => plant(current, index, crop, Date.now()))}>
-                Plant {CROPS[crop].name}
-                <small>{state.inventory[`${crop}_seed`]} seeds</small>
-              </button>
-            ))}
-            {seeds.length === 0 && <p>The market sells seeds when your pouch is empty.</p>}
+            {CROP_IDS.filter((crop) => cropUnlocked(crop, state.townHall.level)).map((crop) => {
+              const held = state.inventory[`${crop}_seed`] ?? 0
+              return (
+                <button
+                  key={crop}
+                  type="button"
+                  className="btn primary"
+                  disabled={held < 1}
+                  onClick={() => act((current) => plant(current, index, crop, Date.now()))}
+                >
+                  Plant {CROPS[crop].name}
+                  <small>{held > 0 ? `${held} seeds · ${formatLeft(CROPS[crop].ms)}` : `Buy seeds · ${CROPS[crop].seedCost} glim`}</small>
+                </button>
+              )
+            })}
           </div>
         </>
       )}
@@ -455,7 +472,7 @@ export function MarketSheet({ onClose }: { onClose: () => void }) {
 export function HelpSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet title="How the village works" onClose={onClose}>
-      <p>Drag to look around the lanes. Pinch or scroll to come closer. Tap a building, a person, or a plot.</p>
+      <p>Drag to look around the lanes. Pinch or scroll to come closer. Tap a soil tile, a neighbor, or a building. Move garden turns on the grid so the beds can slide onto clear grass.</p>
       <p>Crops grow on real timers. Watering shortens them. Leave a crop for twice its time and it tires, selling for half and still cooking fine.</p>
       <p>The inn cooks the first dishes. Friends pay glim and hearts for the plate they asked for. The Town Hall guild sends you into short battles.</p>
       <p>Level and the tax live in the top bar. Goals, Friends, and Market live along the bottom.</p>

@@ -35,6 +35,7 @@ import {
   xpToNext,
 } from './data.ts'
 import { formatLeft } from './format.ts'
+import { DEFAULT_GARDEN, GARDEN_H, GARDEN_W, gardenFits } from './layout.ts'
 import type {
   ActionResult,
   BuildingId,
@@ -59,7 +60,11 @@ export function sanitizeName(raw: string): string {
 }
 
 function emptyPlot(): Plot {
-  return { crop: null, plantedAt: null, watered: false }
+  return { crop: null, plantedAt: null, watered: false, tilled: false }
+}
+
+function workedPlot(): Plot {
+  return { crop: null, plantedAt: null, watered: false, tilled: true }
 }
 
 function freshVillager(id: VillagerId, day: number): VillagerState {
@@ -78,7 +83,7 @@ function freshVillager(id: VillagerId, day: number): VillagerState {
 
 export function createGame(name: string): GameState {
   const state: GameState = {
-    version: 2,
+    version: 3,
     playerName: sanitizeName(name),
     day: 1,
     season: 'early-spring',
@@ -86,7 +91,8 @@ export function createGame(name: string): GameState {
     xp: 0,
     glim: START_GLIM,
     stardust: 0,
-    plots: Array.from({ length: 4 }, emptyPlot),
+    plots: Array.from({ length: GARDEN_W * GARDEN_H }, emptyPlot),
+    garden: { ...DEFAULT_GARDEN },
     inventory: { radish_seed: 3, turnip_seed: 2 },
     stale: {},
     villagers: TH1_IDS.map((id) => freshVillager(id, 1)),
@@ -236,11 +242,25 @@ export function plant(state: GameState, index: number, crop: CropId, now: number
   if ((state.inventory[seed] ?? 0) < 1) return reject(state, `The market can sell you ${CROPS[crop].name} seeds.`)
   const seeded = withItem(state, seed, -1)
   if (!seeded) return reject(state, `The market can sell you ${CROPS[crop].name} seeds.`)
-  let next = replacePlot(seeded, index, { crop, plantedAt: now, watered: false })
+  let next = replacePlot(seeded, index, { crop, plantedAt: now, watered: false, tilled: true })
   next = bump(next, 'plant')
   if (next.tutorial === 'plant' && crop === 'radish') next = { ...next, tutorial: 'grow' }
   const ms = growDuration(crop, false, next.villagers)
   return ok(next, `${CROPS[crop].name} is in the soil. ${formatLeft(ms)} until it is ready.`, true)
+}
+
+export function till(state: GameState, index: number): ActionResult {
+  const plot = state.plots[index]
+  if (!plot) return reject(state, 'That tile is outside the beds.')
+  if (plot.crop) return reject(state, 'Something is already growing here.')
+  if (plot.tilled) return reject(state, 'This soil is already tilled.')
+  return ok(replacePlot(state, index, { ...plot, tilled: true }), 'The soil is turned and waiting.', true)
+}
+
+export function moveGarden(state: GameState, x: number, y: number): ActionResult {
+  if (!gardenFits(x, y)) return reject(state, 'The beds need a clear patch of grass.')
+  if (state.garden.x === x && state.garden.y === y) return reject(state, 'The garden is already here.')
+  return ok({ ...state, garden: { x, y } }, 'The beds slide into their new place.', true)
 }
 
 export function water(state: GameState, index: number, _now: number): ActionResult {
@@ -274,7 +294,7 @@ export function harvest(state: GameState, index: number, now: number): ActionRes
   if (!growth) return reject(state, 'The soil is empty.')
   if (!growth.ready) return reject(state, `Still growing. ${formatLeft(growth.remainingMs)} left.`)
   const crop = plot.crop
-  let next = replacePlot(state, index, emptyPlot())
+  let next = replacePlot(state, index, workedPlot())
   const bagged = withItem(next, crop, 1)
   if (!bagged) return reject(state, 'The bag refused a vegetable. That should not happen.')
   next = bagged
@@ -330,7 +350,7 @@ export function serve(state: GameState, id: VillagerId): ActionResult {
   if ((state.inventory[item] ?? 0) < 1) return reject(state, `Bring ${itemDef(item).name}.`)
   const spent = withItem(state, item, -1)
   if (!spent) return reject(state, `Bring ${itemDef(item).name}.`)
-  const hearts = villager.request.hearts + (isHired(spent, 'popo') ? 1 : 0)
+  const hearts = villager.request.hearts + (isHired(spent, 'elowen') ? 1 : 0)
   let next = gain(spent, 12, villager.request.reward)
   const heart = addFriendship(next, id, hearts)
   next = patchVillager(heart.state, id, { requestFilled: true })
@@ -515,9 +535,6 @@ export function spendCrop(state: GameState, id: CropId): ActionResult {
 
 function finishHall(state: GameState): GameState {
   const level = state.townHall.level + 1
-  let plots = state.plots
-  if (level === 2 && plots.length < 8) plots = plots.concat(Array.from({ length: 8 - plots.length }, emptyPlot))
-  if (level === 4 && plots.length < 16) plots = plots.concat(Array.from({ length: 16 - plots.length }, emptyPlot))
   let villagers = state.villagers
   if (level === 2) {
     const arrivals = TH2_IDS.filter((id) => !villagers.some((villager) => villager.id === id)).map((id) => freshVillager(id, state.day))
@@ -527,7 +544,6 @@ function finishHall(state: GameState): GameState {
     {
       ...state,
       townHall: { level, readyAt: null },
-      plots,
       villagers,
     },
     40,
